@@ -52,6 +52,9 @@ class HouseManager(Profile):
     certifications = models.TextField(null=True, blank=True)
     languages_spoken = models.CharField(max_length=100, null=True, blank=True)
     expected_salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    marital_status = models.CharField(max_length=100, null=True, blank=True)
+    income = models.CharField(max_length=100, null=True, blank=True)
+    occupation = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} (House Manager)"
