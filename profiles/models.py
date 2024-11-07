@@ -17,6 +17,7 @@ class Profile(models.Model):
     rating = models.FloatField(default=0.0)
     image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
     hobbies = models.CharField(max_length=200, null=True, blank=True)
+    tribe = models.CharField(max_length=20, null=True, blank=True)
     user_type = models.CharField(max_length=20, null=True, choices=[('Employer', 'Employer'), ('HouseManager', 'HouseManager')])
 
     class Meta:
@@ -44,6 +45,11 @@ class HouseManager(Profile):
         ('Next-Week', 'Next-Week'),
         ('Next-Month', 'Next-Month')
     )
+    GENDER = (
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other')
+    )
     education = models.CharField(max_length=100, null=True, blank=True)
     availability = models.CharField(max_length=100, null=True, choices=AVAILABILITY)
     years_of_experience = models.PositiveIntegerField(null=True, blank=True, default=0)
@@ -55,6 +61,7 @@ class HouseManager(Profile):
     marital_status = models.CharField(max_length=100, null=True, blank=True)
     income = models.CharField(max_length=100, null=True, blank=True)
     occupation = models.CharField(max_length=100, null=True, blank=True)
+    gender = models.CharField(max_length=10, choices=GENDER, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} (House Manager)"
