@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from.models import *
 from django.contrib.auth import authenticate
+from profiles.models import Employer, HouseManager
 
 class RegistrationSerializer(serializers.ModelSerializer):
     email = serializers.CharField()
@@ -9,10 +10,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(max_length=20)
     last_name = serializers.CharField(max_length=20)
     username = serializers.CharField(max_length=20)
+    user_type = serializers.ChoiceField(choices=[('Employer', 'Employer'), ('HouseManager', 'HouseManager')], write_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ('first_name', 'last_name', 'username', 'email', 'password', 'password2')
+        fields = ('first_name', 'last_name', 'username', 'email', 'user_type', 'password', 'password2')
 
     def validate(self, data):
         if data['password'] != data['password2']:
@@ -27,6 +29,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         validated_data.pop('password2')
+        user_type = validated_data.pop('user_type')
 
         user = CustomUser.objects.create_user(
             email = validated_data['email'],
@@ -35,6 +38,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
             last_name = validated_data['last_name'],
             password = validated_data['password'],
         )
+
+        if user_type == 'Employer':
+            Employer.objects.create(user=user)
+        elif user_type == 'HouseManager':
+            HouseManager.objects.create(user=user)
         return user
             
 class LoginSerializer(serializers.Serializer): 
