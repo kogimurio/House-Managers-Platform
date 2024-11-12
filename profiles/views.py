@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from accounts.models import CustomUser
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -113,4 +115,27 @@ def houseManagerProfileUpdateView(request):
     except HouseManager.DoesNotExist:
         return Response({"message": "You are not a house manager"}, status=status.HTTP_403_FORBIDDEN)
 
+
+@api_view(['GET'])
+def searchView(request):
+    query = request.GET.get('query', '')
+    if query:
+        house_manager_results = HouseManager.objects.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+        employer_results = Employer.objects.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+
+        results = {
+            "house_managers": [
+                {"name": hm.name, "description": hm.description} for hm in house_manager_results
+            ],
+            "employers": [
+                {"name": emp.name, "description": emp.description} for emp in employer_results
+            ],
+        }
+    else:
+        results = {"house_managers": [], "employers": []}
+    return JsonResponse(results)
 

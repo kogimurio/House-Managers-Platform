@@ -18,6 +18,8 @@ class Profile(models.Model):
     image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
     hobbies = models.CharField(max_length=200, null=True, blank=True)
     tribe = models.CharField(max_length=20, null=True, blank=True)
+    name = models.CharField(max_length=200, null=True, blank=True)
+    description = models.CharField(max_length=200, null=True, blank=True)
     user_type = models.CharField(max_length=20, null=True, choices=[('Employer', 'Employer'), ('HouseManager', 'HouseManager')])
 
     class Meta:
