@@ -121,21 +121,65 @@ def searchView(request):
     query = request.GET.get('query', '')
     if query:
         house_manager_results = HouseManager.objects.filter(
-            Q(name__icontains=query) | Q(description__icontains=query)
+            Q(name__icontains=query) | Q(description__icontains=query) | Q(location__icontains=query)
         )
         employer_results = Employer.objects.filter(
-            Q(name__icontains=query) | Q(description__icontains=query)
+            Q(name__icontains=query) | Q(description__icontains=query) | Q(location__icontains=query)
         )
 
         results = {
             "house_managers": [
-                {"name": hm.name, "description": hm.description} for hm in house_manager_results
+                {"id": hm.id, "name": hm.name, "description": hm.description, 'location':hm.location} for hm in house_manager_results
             ],
             "employers": [
-                {"name": emp.name, "description": emp.description} for emp in employer_results
+                {"id": emp.id, "name": emp.name, "description": emp.description, 'location': emp.location} for emp in employer_results
             ],
         }
     else:
         results = {"house_managers": [], "employers": []}
     return JsonResponse(results)
+
+@api_view(['GET'])
+def house_manager_detail_view(request, id):
+    try:
+        house_manager = HouseManager.objects.get(id=id)
+        data = {
+            "name": house_manager.name,
+            "description": house_manager.description,
+            "bio": house_manager.bio,
+            "tribe": house_manager.tribe,
+            "location": house_manager.location,
+            "rating": house_manager.rating,
+            "image": house_manager.image.url if house_manager.image else None,
+            "hobbies": house_manager.hobbies,
+            "education": house_manager.education,
+            "availability": house_manager.availability,
+            "years_of_experience": house_manager.years_of_experience,
+            "skills": house_manager.skills,
+            "age": house_manager.age,
+            "certifications": house_manager.certifications,
+            "languages_spoken": house_manager.languages_spoken,
+            "expected_salary": house_manager.expected_salary,
+            "marital_status": house_manager.marital_status,
+            "income": house_manager.income,
+            "occupation": house_manager.occupation,
+            "gender": house_manager.gender,
+            
+        }
+        return JsonResponse(data)
+    except HouseManager.DoesNotExist:
+        return Response({"error": "House manager not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def employer_detail_view(request, id):
+    try:
+        employer = Employer.objects.get(id=id)
+        data = {
+            "name": employer.name,
+            "description": employer.description,
+        }
+        return JsonResponse(data)
+    except Employer.DoesNotExist:
+        return Response({"error": "Employer not found"}, status=status.HTTP_404_NOT_FOUND)
+
 
